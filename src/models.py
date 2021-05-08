@@ -9,11 +9,55 @@ class User(db.Model):
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<User %r>' % self.email
 
     def serialize(self):
         return {
             "id": self.id,
             "email": self.email,
             # do not serialize the password, its a security breach
+        }
+
+class Todo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    label = db.Column(db.String(200), unique=False, nullable=False)
+    done = db.Column(db.Boolean(), unique=False, nullable=False)
+
+    def __repr__(self):
+        return '<Todo %r>' % self.label
+
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+    @classmethod
+    def get(cls, id):
+        return cls.query.get(id)
+
+    @classmethod
+    def create(cls, request_json):
+        todo = cls()
+        todo.update(request_json)
+        todo.save()
+        return todo
+    
+    
+    def update(self, request_json):
+        self.label = request_json["label"]
+        self.done = request_json["done"]
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    
+    def destroy(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "label": self.label,
+            "done": self.done
         }

@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, Todo
 #from models import Person
 
 app = Flask(__name__)
@@ -36,8 +36,50 @@ def handle_hello():
     response_body = {
         "msg": "Hello, this is your GET /user response "
     }
-
     return jsonify(response_body), 200
+
+
+#Todo list
+
+@app.route('/todos', methods=['GET'])
+def get_todos():
+    response = Todo.get_all()
+    
+    todos = []
+    for todo in response:
+        todos.append(todo.serialize())
+
+    return jsonify(todos), 200
+
+@app.route('/todos/<int:id>', methods=['GET'])
+def get_todo(id):
+    todo = Todo.get(id)
+    
+    return jsonify(todo.serialize()), 200
+
+
+@app.route('/todos/<int:id>', methods=['PUT'])
+def update_todo(id):
+    todo = Todo.get(id)
+    todo.update(request.get_json())
+
+    todo.save()
+    
+    return jsonify(todo.serialize()), 200
+
+@app.route('/todos', methods=['POST'])
+def create_todos():
+    todo = Todo.create(request.get_json())
+
+    return jsonify(todo.serialize()), 200
+
+@app.route('/todos/<int:id>', methods=['DELETE'])
+def delete_todo(id):
+    todo = Todo.get(id)
+    todo = todo.destroy()
+
+    return "Todo " + str(id) + " was successfully deleted", 200
+
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
