@@ -30,13 +30,13 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/user', methods=['GET'])
-def handle_hello():
+# @app.route('/user', methods=['GET'])
+# def handle_hello():
 
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
-    return jsonify(response_body), 200
+#     response_body = {
+#         "msg": "Hello, this is your GET /user response "
+#     }
+#     return jsonify(response_body), 200
 
 
 #Todo list
@@ -44,7 +44,7 @@ def handle_hello():
 @app.route('/todos', methods=['GET'])
 def get_todos():
     response = Todo.get_all()
-    
+
     todos = []
     for todo in response:
         todos.append(todo.serialize())
@@ -54,7 +54,7 @@ def get_todos():
 @app.route('/todos/<int:id>', methods=['GET'])
 def get_todo(id):
     todo = Todo.get(id)
-    
+
     return jsonify(todo.serialize()), 200
 
 
@@ -63,8 +63,6 @@ def update_todo(id):
     todo = Todo.get(id)
     todo.update(request.get_json())
 
-    todo.save()
-    
     return jsonify(todo.serialize()), 200
 
 @app.route('/todos', methods=['POST'])

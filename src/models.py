@@ -38,15 +38,16 @@ class Todo(db.Model):
     def create(cls, request_json):
         todo = cls()
         todo.update(request_json)
-        todo.save()
+
+        db.session.add(todo)
+        db.session.commit()
         return todo
     
     
     def update(self, request_json):
         self.label = request_json["label"]
         self.done = request_json["done"]
-
-    def save(self):
+        
         db.session.add(self)
         db.session.commit()
 
